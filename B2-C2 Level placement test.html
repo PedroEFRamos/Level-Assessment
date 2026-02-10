@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>English Level Assessment</title>
+
+<style>
+body { font-family: Arial, sans-serif; margin: 30px; max-width: 900px; }
+.banner { background: linear-gradient(135deg,#2c3e50,#34495e); color:white; padding:25px 30px; margin:-30px -30px 30px -30px;}
+.banner h1 { margin:0; font-size:28px;}
+.banner p { margin:5px 0 0; font-size:16px; opacity:0.9;}
+.section-title { margin-top:40px; font-size:22px; color:#2c3e50;}
+.reading-text { background:#f4f6f8; padding:20px; border-left:4px solid #2c3e50; margin:20px 0; line-height:1.6;}
+.question { margin-bottom:15px; padding:10px; border-bottom:1px solid #ddd;}
+.options label { display:block; margin-left:15px;}
+.short-answer { width:100%; min-height:50px; margin-top:5px; margin-bottom:15px; }
+textarea.writing-task { width:100%; min-height:150px; margin-top:10px; }
+#timer { font-size:18px; font-weight:bold; color:#c0392b; position:fixed; top:20px; right:20px; background:#fff; padding:8px 12px; border:1px solid #ccc;}
+button { padding:12px 20px; font-size:16px; margin-top:30px; cursor:pointer;}
+#result { display:none; margin-top:30px; padding:20px; border:2px solid #2c3e50;}
+</style>
+</head>
+
+<body>
+
+<div class="banner">
+<h1>English Level Assessment</h1>
+<p>B2–C2 • Private Placement Test</p>
+</div>
+
+<div id="timer">Time left: 75:00</div>
+
+<p><strong>Student name:</strong><br>
+<input type="text" id="studentName" style="width:300px;"></p>
+
+<form id="testForm">
+
+<h2 class="section-title">Part 1 – Grammar</h2>
+<div id="Grammar"></div>
+
+<h2 class="section-title">Part 2 – Vocabulary</h2>
+<div id="Vocabulary"></div>
+
+<h2 class="section-title">Part 3 – Reading 1 (B2/C1)</h2>
+<div class="reading-text">
+Despite widespread assumptions, productivity does not necessarily increase with longer working hours.
+Studies show that after a certain point, efficiency declines sharply. Many organizations equate long hours with commitment,
+overlooking fatigue and decision-making errors that result. This focus on overwork may ultimately reduce outcomes.
+</div>
+<div id="Reading1"></div>
+<h3>Short-answer (Reading 1)</h3>
+<div id="reading1-sa"></div>
+
+<h2 class="section-title">Part 4 – Reading 2 (C1/C2)</h2>
+<div class="reading-text">
+The recent discourse on workplace optimization suggests that overstretched schedules often compromise cognitive function
+and creative problem-solving. While managerial culture frequently valorizes persistence and endurance, empirical evidence
+underscores the counterproductive consequences of chronic overwork, revealing diminished innovation and heightened error rates.
+</div>
+<div id="Reading2"></div>
+<h3>Short-answer (Reading 2)</h3>
+<div id="reading2-sa"></div>
+
+<h2 class="section-title">Part 5 – Writing Task</h2>
+<p>Write a short essay (150–200 words) on the following topic:</p>
+<p><em>"The impact of overwork on productivity and personal well-being. Suggest ways organizations can maintain efficiency without overworking employees."</em></p>
+<textarea class="writing-task" id="writingTask" placeholder="Type your essay here..."></textarea>
+
+</form>
+
+<button onclick="submitTest()">Submit Test</button>
+
+<div id="result"></div>
+
+<script>
+const teacherEmail = "pedroeframos@gmail.com";
+
+/* ===== TIMER ===== */
+let timeLeft = 75*60; // 75 minutes
+const timerEl = document.getElementById("timer");
+const timer = setInterval(() => {
+    timeLeft--;
+    const min = Math.floor(timeLeft/60);
+    const sec = timeLeft%60;
+    timerEl.textContent = `Time left: ${min}:${sec.toString().padStart(2,'0')}`;
+    if(timeLeft<=0){ clearInterval(timer); alert("Time is up. Test will be submitted."); submitTest(true);}
+},1000);
+
+/* ===== QUESTIONS ===== */
+const questions = [
+    // Grammar (12)
+    {s:"Grammar",q:"Hardly ___ the meeting started when tensions began to surface.",o:["had","did","was","has"],a:1},
+    {s:"Grammar",q:"She speaks as though she ___ the situation herself.",o:["handles","handled","had handled","would handle"],a:2},
+    {s:"Grammar",q:"No sooner ___ the proposal than it was rejected.",o:["had they submitted","they had submitted","they submitted","did they submit"],a:0},
+    {s:"Grammar",q:"The manager demanded that the report ___ by Friday.",o:["is completed","will be completed","be completed","has been completed"],a:2},
+    {s:"Grammar",q:"It’s high time you ___ responsibility for your actions.",o:["take","took","have taken","will take"],a:1},
+    {s:"Grammar",q:"He would rather you ___ him before making such decisions.",o:["inform","informed","had informed","would inform"],a:1},
+    {s:"Grammar",q:"The more he tried to explain, ___ confused she became.",o:["the much","much more","the more","more"],a:2},
+    {s:"Grammar",q:"She denied ___ aware of any irregularities.",o:["to be","being","having been","to have been"],a:1},
+    {s:"Grammar",q:"Little ___ about the consequences at the time.",o:["did he care","he cared","he did care","cared he"],a:0},
+    {s:"Grammar",q:"The contract, ___ signed last week, has yet to be implemented.",o:["that was","which was","having been","being"],a:1},
+    {s:"Grammar",q:"Were it not ___ his quick reaction, the outcome would have been disastrous.",o:["for","to","by","with"],a:0},
+    {s:"Grammar",q:"She’s not so much careless ___ outright negligent.",o:["rather than","as","than","that"],a:1},
+
+    // Vocabulary (10)
+    {s:"Vocabulary",q:"His explanation was so ___ that nobody believed it.",o:["compelling","implausible","coherent","persuasive"],a:1},
+    {s:"Vocabulary",q:"The company is trying to ___ its losses.",o:["cut","curb","salvage","restrain"],a:2},
+    {s:"Vocabulary",q:"Her argument was based on a ___ interpretation.",o:["superficial","trivial","marginal","negligible"],a:0},
+    {s:"Vocabulary",q:"The decision caused public ___.",o:["outcry","protest","objection","opposition"],a:0},
+    {s:"Vocabulary",q:"He tends to ___ responsibility.",o:["evade","elude","escape","avoid"],a:0},
+    {s:"Vocabulary",q:"Talks reached a ___.",o:["blockade","stalemate","deadlock","impasse"],a:2},
+    {s:"Vocabulary",q:"She gave a ___ smile.",o:["forced","fake","false","artificial"],a:0},
+    {s:"Vocabulary",q:"This calls into ___ the theory.",o:["question","doubt","uncertainty","dispute"],a:0},
+    {s:"Vocabulary",q:"The ___ behind the reform.",o:["intellect","brain","mind","thinker"],a:1},
+    {s:"Vocabulary",q:"Effective on paper, but ___ in practice.",o:["defective","deficient","flawed","lacking"],a:2},
+
+    // Reading1 MC
+    {s:"Reading1",q:"Main idea of Reading 1 is that long working hours ___ productivity.",o:["increase","guarantee","reduce","prove"],a:2},
+    {s:"Reading1",q:"‘Diminishing returns’ refers to ___.",o:["profits","motivation","benefits","commitment"],a:2},
+
+    // Reading2 MC
+    {s:"Reading2",q:"Overstretched schedules compromise ___.",o:["cognitive function","profit","payroll","attendance"],a:0},
+    {s:"Reading2",q:"Chronic overwork reduces ___.",o:["innovation","discipline","salary","motivation"],a:0}
+];
+
+// Short-answer placeholders
+const shortAnswers = [
+    {s:"Reading1",q:"Explain in your own words why overwork reduces productivity.",id:"reading1-sa"},
+    {s:"Reading2",q:"What is the main warning in Reading 2 about chronic overwork?",id:"reading2-sa"}
+];
+
+/* ===== RENDER AFTER DOM LOAD ===== */
+document.addEventListener("DOMContentLoaded", () => {
+    function renderSection(sectionId, sectionName){
+        const container=document.getElementById(sectionId);
+        questions.filter(q=>q.s===sectionName).forEach((q,i)=>{
+            const index=questions.indexOf(q);
+            const div=document.createElement("div");
+            div.className="question";
+            div.innerHTML=`<strong>${index+1}. ${q.q}</strong>`;
+            q.o.forEach((opt,j)=>{
+                div.innerHTML+=`<label><input type="radio" name="q${index}" value="${j}"> ${opt}</label>`;
+            });
+            container.appendChild(div);
+        });
+    }
+    ["Grammar","Vocabulary","Reading1","Reading2"].forEach(sec=>renderSection(sec,sec));
+
+    shortAnswers.forEach(sa=>{
+        const container=document.getElementById(sa.id);
+        const div=document.createElement("div");
+        div.className="question";
+        div.innerHTML=`<strong>${sa.q}</strong><br><textarea class="short-answer" id="${sa.id}-ta" placeholder="Type your answer here..."></textarea>`;
+        container.appendChild(div);
+    });
+});
+
+/* ===== SUBMIT ===== */
+function submitTest(auto=false){
+    clearInterval(timer);
+    const name=document.getElementById("studentName").value.trim();
+    if(!name && !auto){alert("Please enter your name."); return;}
+
+    let score=0,g=0,v=0,r1=0,r2=0,answers="";
+    questions.forEach((q,i)=>{
+        const sel=document.querySelector(`input[name="q${i}"]:checked`);
+        const student=sel? q.o[sel.value]:"No answer";
+        if(sel && parseInt(sel.value)===q.a){ score++; if(q.s==="Grammar") g++; if(q.s==="Vocabulary") v++; if(q.s==="Reading1") r1++; if(q.s==="Reading2") r2++; }
+        answers+=`${i+1}. ${student}\n`;
+    });
+
+    // Short answers
+    let saText="";
+    shortAnswers.forEach(sa=>{
+        const text=document.getElementById(sa.id+"-ta").value.trim();
+        saText+=`${sa.q}\n${text || "No answer"}\n\n`;
+    });
+
+    // Writing
+    const writing=document.getElementById("writingTask").value.trim()||"No submission";
+
+    let level=score<=14?"B2":score<=19?"Strong B2":score<=23?"C1":score<=27?"Strong C1":"C2";
+
+    const subject=encodeURIComponent(`English Level Test – ${name}`);
+    const body=encodeURIComponent(
+        `Student: ${name}\nScore: ${score}/${questions.length}\nLevel: ${level}\n\nGrammar: ${g}\nVocabulary: ${v}\nReading1: ${r1}\nReading2: ${r2}\n\nMC Answers:\n${answers}\n\nShort-answer Responses:\n${saText}\nWriting Task:\n${writing}`
+    );
+
+    window.location.href=`mailto:${teacherEmail}?subject=${subject}&body=${body}`;
+
+    document.getElementById("result").style.display="block";
+    document.getElementById("result").innerHTML="<h2>Test submitted</h2><p>Your results have been recorded. Please send the email that opened to complete submission.</p>";
+}
+</script>
+
+</body>
+</html>
