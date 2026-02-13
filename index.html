@@ -188,8 +188,12 @@ function submitTest(auto=false){
 sendResultsToSheet(name, score, level, writing, answers + "\n\nShort answers:\n" + saText);
     window.location.href=`mailto:${teacherEmail}?subject=${subject}&body=${body}`;
 
-    document.getElementById("result").style.display="block";
-    document.getElementById("result").innerHTML="<h2>Test submitted</h2><p>Your results have been recorded. Please send the email that opened to complete submission.</p>";
+    document.body.innerHTML = `
+  <div style="font-family:Arial; text-align:center; margin-top:100px;">
+    <h1>Test submitted ✅</h1>
+    <p>You may now close this window.</p>
+  </div>
+`;
 }
 function sendResultsToSheet(name, score, level, writing, answers) {
   fetch("https://script.google.com/macros/s/AKfycbx2zNjrO5Kdzr35Z4b_6tT4F--tMEaVQQZJ5BPrhZSvtJ7sEZjxB0dkwvbQCROjASG9/exec", {
@@ -209,6 +213,7 @@ function sendResultsToSheet(name, score, level, writing, answers) {
 
 </body>
 </html>
+
 
 
 
