@@ -191,8 +191,8 @@ sendResultsToSheet(name, score, level, writing, answers + "\n\nShort answers:\n"
     document.getElementById("result").style.display="block";
     document.getElementById("result").innerHTML="<h2>Test submitted</h2><p>Your results have been recorded. Please send the email that opened to complete submission.</p>";
 }
-async function sendResultsToSheet(name, score, level, writing, answers) {
-  await fetch("https://script.google.com/macros/s/AKfycbx2zNjrO5Kdzr35Z4b_6tT4F--tMEaVQQZJ5BPrhZSvtJ7sEZjxB0dkwvbQCROjASG9/exec", {
+function sendResultsToSheet(name, score, level, writing, answers) {
+  fetch("https://script.google.com/macros/s/AKfycbx2zNjrO5Kdzr35Z4b_6tT4F--tMEaVQQZJ5BPrhZSvtJ7sEZjxB0dkwvbQCROjASG9/exec", {
     method: "POST",
     body: JSON.stringify({
       name: name,
@@ -201,14 +201,14 @@ async function sendResultsToSheet(name, score, level, writing, answers) {
       writing: writing,
       answers: answers
     }),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
-}    
+    headers: { "Content-Type": "application/json" },
+    mode: "no-cors"   // ⭐ important
+  }).catch(err => console.log("Sheet send failed:", err));
+} 
 </script>
 
 </body>
 </html>
+
 
 
