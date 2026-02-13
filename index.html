@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ===== SUBMIT ===== */
-async function submitTest(auto=false){
+function submitTest(auto=false){
     clearInterval(timer);
     const name=document.getElementById("studentName").value.trim();
     if(!name && !auto){alert("Please enter your name."); return;}
@@ -185,7 +185,7 @@ async function submitTest(auto=false){
     const body=encodeURIComponent(
         `Student: ${name}\nScore: ${score}/${questions.length}\nLevel: ${level}\n\nGrammar: ${g}\nVocabulary: ${v}\nReading1: ${r1}\nReading2: ${r2}\n\nMC Answers:\n${answers}\n\nShort-answer Responses:\n${saText}\nWriting Task:\n${writing}`
     );
-await sendResultsToSheet(name, score, level, writing, answers + "\n\nShort answers:\n" + saText);
+sendResultsToSheet(name, score, level, writing, answers + "\n\nShort answers:\n" + saText);
     window.location.href=`mailto:${teacherEmail}?subject=${subject}&body=${body}`;
 
     document.getElementById("result").style.display="block";
@@ -210,4 +210,5 @@ async function sendResultsToSheet(name, score, level, writing, answers) {
 
 </body>
 </html>
+
 
